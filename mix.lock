@@ -1,0 +1,4 @@
+%{
+  "hammer": {:hex, :hammer, "6.0.0", "72ec6fff10e9d63856968988a22ee04c4d6d5248071ddccfbda50aa6c455c1d7", [:mix], [{:poolboy, "~> 1.5", [hex: :poolboy, repo: "hexpm", optional: false]}], "hexpm"},
+  "poolboy": {:hex, :poolboy, "1.5.2", "392b007a1693a64540cead79830443abf5762f5d30cf50bc95cb2c1aaafa006b", [:rebar3], [], "hexpm"},
+}
