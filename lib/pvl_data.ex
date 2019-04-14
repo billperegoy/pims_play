@@ -7,18 +7,26 @@ defmodule PIMSPlay.PVLData do
   end
 
   @impl true
-  def handle_cast({:add_visit, pims_visit_id}, state) do
-    {:noreply, Map.put(state, pims_visit_id, new_visit())}
+  def handle_cast({:add_visit, pims_visit_id}, %{visits: visits, api_queue: api_queue}) do
+    new_visits = Map.put(visits, pims_visit_id, new_visit())
+    new_api_queue = :queue.in(pims_visit_id, api_queue)
+    {:noreply, %{visits: new_visits, api_queue: new_api_queue}}
   end
 
   @impl true
-  def handle_cast({:remove_visit, pims_visit_id}, state) do
-    {:noreply, Map.delete(state, pims_visit_id)}
+  def handle_cast({:remove_visit, pims_visit_id}, %{visits: visits, api_queue: api_queue}) do
+    new_visits = Map.delete(visits, pims_visit_id)
+    new_api_queue = :queue.filter(&(&1 != pims_visit_id), api_queue)
+    {:noreply, %{visits: new_visits, api_queue: new_api_queue}}
   end
 
   @impl true
-  def handle_call(:get_visits, _from, state) do
-    {:reply, state, state}
+  def handle_call(:list_visits, _from, %{visits: visits} = state) do
+    {:reply, visits, state}
+  end
+
+  def handle_call(:list_api_queue_jobs, _from, %{api_queue: api_queue} = state) do
+    {:reply, :queue.to_list(api_queue), state}
   end
 
   defp new_visit() do
@@ -27,7 +35,7 @@ defmodule PIMSPlay.PVLData do
 
   # Client API
   def start_link() do
-    GenServer.start_link(__MODULE__, %{})
+    GenServer.start_link(__MODULE__, %{visits: %{}, api_queue: :queue.new()})
   end
 
   def add_visit(pid, pims_visit_id) do
@@ -38,7 +46,11 @@ defmodule PIMSPlay.PVLData do
     GenServer.cast(pid, {:remove_visit, pims_visit_id})
   end
 
-  def get_visits(pid) do
-    GenServer.call(pid, :get_visits)
+  def list_visits(pid) do
+    GenServer.call(pid, :list_visits)
+  end
+
+  def list_api_queue_jobs(pid) do
+    GenServer.call(pid, :list_api_queue_jobs)
   end
 end
