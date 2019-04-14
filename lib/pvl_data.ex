@@ -1,5 +1,5 @@
 defmodule PIMSPlay.PVLData do
-  use GenServer
+  use GenStage
 
   @impl true
   def init(state) do
@@ -25,6 +25,7 @@ defmodule PIMSPlay.PVLData do
     {:reply, visits, state}
   end
 
+  @impl true
   def handle_call(:list_api_queue_jobs, _from, %{api_queue: api_queue} = state) do
     {:reply, :queue.to_list(api_queue), state}
   end

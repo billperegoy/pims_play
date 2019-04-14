@@ -21,6 +21,7 @@ defmodule PimsPlay.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:gen_stage, "~> 0.14.0"},
       {:hammer, "~> 6.0"}
     ]
   end
